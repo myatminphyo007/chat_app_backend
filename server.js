@@ -15,7 +15,7 @@ const httpServer = createServer(app)
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "https://your-vercel-url.vercel.app", // your actual vercel URL
+        origin: "https://chat-app-frontend-eight-beta.vercel.app",
     },
     pingTimeout: 60000
 })
@@ -24,12 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors({
-    origin: "https://your-vercel-url.vercel.app"
+    origin: "https://chat-app-frontend-eight-beta.vercel.app"
 }))
+
 app.use("/api/users/", userRouter)
 app.use("/api/chats/", chatRouter)
 app.use("/api/messages", messageRouter)
-
 
 io.on("connection", (socket) => {
     console.log("Connected to socketio")
@@ -37,18 +37,18 @@ io.on("connection", (socket) => {
     socket.on("set up", (user) => {
         socket.join(user._id)
         console.log("Setup complete for:", user.name, user._id)
-        socket.emit("connected") // *** ADDED - confirms to frontend ***
+        socket.emit("connected")
     })
 
     socket.on("new message", (newMessage) => {
+        console.log("new message received on backend:", newMessage.content)
         const chat = newMessage.chat;
         if (!chat.users) return
 
-        chat.users.forEach(userId => {  // rename to userId - it's already an id string
-            if (userId === newMessage.sender._id) {  // compare string to string
-                return
-            }
-            socket.in(userId).emit("message received", newMessage)  // use userId directly
+        chat.users.forEach(userId => {
+            if (userId === newMessage.sender._id) return
+            console.log("sending to:", userId)
+            socket.in(userId).emit("message received", newMessage)
         })
     })
 })
