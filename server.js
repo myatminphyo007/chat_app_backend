@@ -15,7 +15,7 @@ const httpServer = createServer(app)
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173"
+        origin: "https://your-vercel-url.vercel.app", // your actual vercel URL
     },
     pingTimeout: 60000
 })
@@ -23,7 +23,9 @@ const io = new Server(httpServer, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(cors())
+app.use(cors({
+    origin: "https://your-vercel-url.vercel.app"
+}))
 app.use("/api/users/", userRouter)
 app.use("/api/chats/", chatRouter)
 app.use("/api/messages", messageRouter)
