@@ -13,9 +13,15 @@ dotenv.config()
 const app = express();
 const httpServer = createServer(app)
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://chat-app-frontend-eight-beta.vercel.app"
+];
+
 const io = new Server(httpServer, {
     cors: {
-        origin: "https://chat-app-frontend-eight-beta.vercel.app",
+        origin: allowedOrigins,
+        credentials: true
     },
     pingTimeout: 60000
 })
@@ -24,7 +30,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cors({
-    origin: "https://chat-app-frontend-eight-beta.vercel.app"
+    origin: allowedOrigins,
+    credentials: true
 }))
 
 app.use("/api/users/", userRouter)
